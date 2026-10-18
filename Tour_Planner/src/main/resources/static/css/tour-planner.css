@@ -1,0 +1,55 @@
+.home-hero,
+.advisors-hero {
+    background:
+        linear-gradient(rgba(5, 35, 65, 0.68), rgba(5, 35, 65, 0.68)),
+        url("../assets/imagenes/asesores-de-viajes.jpg") center / cover no-repeat;
+}
+
+.home-hero {
+    min-height: 245px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-button {
+    min-width: 240px;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0.55rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(13, 110, 253, 0.32);
+}
+
+@media (max-width: 420px) {
+    .action-button {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+.destination-image {
+    height: 210px;
+    object-fit: cover;
+}
+
+.advisor-image {
+    height: 250px;
+    object-fit: cover;
+}
+
+.card {
+    overflow: hidden;
+    border-radius: 12px;
+}

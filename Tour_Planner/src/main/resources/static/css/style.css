@@ -1,0 +1,76 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.custom-logo {
+    height: 40px;
+    width: auto;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-nav .nav-link.active {
+    color: #0d6efd;
+    font-weight: 700;
+    border-bottom: 3px solid #0d6efd;
+}
+
+.page-hero-section {
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+
+.service-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+
+.badge-region {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+
+.table-admin th {
+    background-color: #212529;
+    color: white;
+}
+
+
+footer a:hover {
+    color: #0d6efd !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-link.active {
+        border-bottom: 0;
+        border-left: 3px solid #0d6efd;
+        padding-left: 0.75rem;
+    }
+}

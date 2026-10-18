@@ -1,0 +1,100 @@
+# ==================================================
+# Maven
+# ==================================================
+target/
+
+# Maven release / build files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Maven Wrapper
+# Se versionan:
+# .mvn/wrapper/maven-wrapper.properties
+# mvnw
+# mvnw.cmd
+
+
+# ==================================================
+# Spring Boot
+# ==================================================
+
+# Logs
+*.log
+logs/
+
+# Spring Boot PID files
+*.pid
+
+# Spring Boot / local configuration
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+
+# ==================================================
+# Eclipse / Spring Tool Suite (STS)
+# ==================================================
+.classpath
+.project
+.settings/
+.factorypath
+
+.apt_generated/
+.apt_generated_test/
+
+.springBeans
+.sts4-cache/
+
+
+# ==================================================
+# Visual Studio Code
+# ==================================================
+.vscode/
+
+# Java / VS Code generated files
+bin/
+
+
+# ==================================================
+# Java
+# ==================================================
+*.class
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
+
+
+# ==================================================
+# Operating System
+# ==================================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+
+
+# ==================================================
+# Temporary files
+# ==================================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+*.orig

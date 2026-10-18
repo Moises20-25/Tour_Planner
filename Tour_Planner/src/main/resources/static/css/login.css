@@ -1,0 +1,30 @@
+
+.login-page {
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(5, 35, 65, 0.60), rgba(5, 35, 65, 0.60)),
+        url("../assets/imagenes/fondotours.jpg") center / cover no-repeat fixed;
+}
+
+.login-page .card {
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.login-page .card h3 {
+    font-weight: 700;
+}
+
+.login-page .btn-primary {
+    font-weight: 600;
+    padding: 0.55rem 1rem;
+}
+
+@media (max-width: 576px) {
+    .login-page .container {
+        margin-top: 2rem !important;
+        padding-top: 1rem !important;
+    }
+}

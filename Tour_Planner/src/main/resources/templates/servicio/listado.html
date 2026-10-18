@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin - Gestión de Servicios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('mservicios')}"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-briefcase text-primary"></i> Gestión de Servicios</h2>
+            <p class="text-muted">
+                Bienvenido, <span th:text="${session.fullName}">Admin</span>
+                (<span th:text="${session.tipo}">admin</span>)
+            </p>
+        </div>
+        <div>
+            <a th:href="@{/servicio/nuevo}" class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle me-2"></i>Nuevo Servicio
+            </a>
+            
+        </div>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-header"><strong>Servicios registrados</strong></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="servicio : ${lstServicios}">
+                            <td th:text="${servicio.idServicio}">1</td>
+                            <td th:text="${servicio.tipo}">tipo</td>
+                            <td th:text="${servicio.nombre}">Nombre</td>
+                            <td th:text="'S/ ' + ${servicio.precio}">S/ 0</td>
+                            <td th:text="${servicio.stock}">0</td>
+                            <td>
+                                <span th:class="${servicio.disponibilidad} ? 'badge bg-success' : 'badge bg-secondary'"
+                                      th:text="${servicio.disponibilidadDescripcion}">Disponible</span>
+                            </td>
+                            <td class="text-nowrap">
+                                <a th:href="@{/servicio/edicion/{id}(id=${servicio.idServicio})}"
+                                   class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form class="d-inline" method="post" th:action="@{/servicio/cambiar-activo}">
+                                    <input type="hidden" name="id" th:value="${servicio.idServicio}">
+                                    <button type="submit" class="btn btn-sm"
+                                            th:classappend="${servicio.disponibilidad} ? 'btn-danger' : 'btn-success'"
+                                            th:title="${servicio.disponibilidad} ? 'Desactivar' : 'Activar'"
+                                            onclick="return confirm('¿Cambiar la disponibilidad de este servicio?');">
+                                        <i class="bi"
+                                           th:classappend="${servicio.disponibilidad} ? 'bi-slash-circle' : 'bi-check-circle'"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(lstServicios)}">
+                            <td colspan="7" class="text-center text-muted">No hay servicios registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
