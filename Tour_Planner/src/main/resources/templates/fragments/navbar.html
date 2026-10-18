@@ -60,9 +60,6 @@
             </a>
 
             <!-- Con sesión -->
-            <span class="navbar-text ms-lg-2"
-                  th:if="${session.fullName != null}"
-                  th:text="${session.fullName}">Usuario</span>
             <a class="btn btn-outline-danger ms-lg-2"
                th:if="${session.fullName != null}"
                th:href="@{/cerrar-sesion}">
