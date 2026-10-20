@@ -39,6 +39,8 @@ public class LoginController {
 
 		session.setAttribute("fullName", usuario.getNombreCompleto());
 		session.setAttribute("tipo", usuario.getTipo());
+		session.setAttribute("idUsuario", usuario.getIdUsuario());
+		
 
 		return "admin".equals(usuario.getTipo()) ? "redirect:/paquete/listado" : "redirect:/";
 	}

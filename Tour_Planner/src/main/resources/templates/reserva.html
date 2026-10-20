@@ -32,16 +32,12 @@
                     </strong>
                 </div>
             </section>
-
-            <div class="alert alert-info" role="status">
-                Este formulario es una demostración: por ahora no guarda ni confirma reservas
-                y no realiza cobros.
-            </div>
-            <div th:if="${solicitudValidada}" class="alert alert-success" role="status">
-                Los datos del formulario son válidos. El envío y registro de la reserva se
-                implementarán más adelante; todavía no se ha guardado ninguna solicitud.
-            </div>
-
+		
+			<div th:if="${mensaje}" class="alert alert-success" role="status"
+			     th:text="${mensaje}"></div>
+			<div th:if="${error}" class="alert alert-danger" role="alert"
+			     th:text="${error}"></div>
+			
             <section class="card">
                 <div class="card-body">
                     <h2 class="h4 mb-4">Datos para tu viaje</h2>
@@ -84,7 +80,7 @@
                         </div>
 
                         <button class="btn btn-primary w-100 mt-2" type="submit">
-                            Revisar solicitud
+                            Reservar
                         </button>
                     </form>
                 </div>

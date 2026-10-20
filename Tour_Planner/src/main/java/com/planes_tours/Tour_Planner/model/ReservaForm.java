@@ -2,6 +2,8 @@ package com.planes_tours.Tour_Planner.model;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,11 +11,12 @@ import lombok.Setter;
 @Setter
 public class ReservaForm {
 
-	private String nombre;
+    private String nombre;
 
-	private String correo;
+    private String correo;
 
-	private LocalDate fechaViaje;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fechaViaje;
 
-	private Integer viajeros = 1;
+    private Integer viajeros = 1;
 }
