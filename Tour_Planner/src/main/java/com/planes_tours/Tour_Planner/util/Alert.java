@@ -35,4 +35,20 @@ public final class Alert {
                 </script>
                 """, timer, esc(icon), esc(title));
     }
+
+    // Mensaje de bienvenida con foto (como el del profesor)
+    public static String sweetImageUrl(String title, String text, String imageUrl) {
+        return String.format("""
+                <script>
+                    Swal.fire({
+                        title: '%s',
+                        text: '%s',
+                        imageUrl: '%s',
+                        imageWidth: 250,
+                        imageHeight: 250,
+                        customClass: { image: 'rounded-circle' }
+                    });
+                </script>
+                """, esc(title), esc(text), esc(imageUrl));
+    }
 }

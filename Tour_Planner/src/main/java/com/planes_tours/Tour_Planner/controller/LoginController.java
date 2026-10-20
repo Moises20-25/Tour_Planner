@@ -48,8 +48,9 @@ public class LoginController {
 		session.setAttribute("tipo", usuario.getTipo());
 		session.setAttribute("idUsuario", usuario.getIdUsuario());
 
-		flash.addFlashAttribute("alert",
-				Alert.sweetToast("Bienvenido, " + usuario.getNombreCompleto(), "success", 3000));
+		String routeImage = "/assets/imagenes/bienvenidaTours.gif";
+		String alert = Alert.sweetImageUrl("Bienvenido a Tour Planner", usuario.getNombreCompleto(), routeImage);
+		flash.addFlashAttribute("alert", alert);
 
 		return "admin".equals(usuario.getTipo()) ? "redirect:/paquete/listado" : "redirect:/";
 	}
