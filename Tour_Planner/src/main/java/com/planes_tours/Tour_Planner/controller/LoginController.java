@@ -9,10 +9,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.planes_tours.Tour_Planner.dto.AutenticacionFilter;
 import com.planes_tours.Tour_Planner.service.AutenticacionService;
-import com.planes_tours.Tour_Planner.util.Alert;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import com.planes_tours.Tour_Planner.util.Alert;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,18 +29,14 @@ public class LoginController {
 	@PostMapping("iniciar-sesion")
 	public String iniciarSesion(@ModelAttribute AutenticacionFilter filter, HttpSession session,
 			RedirectAttributes flash) {
-
 		var usuario = autenticacionService.autenticar(filter);
 
-		// validamos que el usuario exista
 		if (usuario == null) {
-			flash.addFlashAttribute("alert", Alert.sweetAlertError("Email o contraseña incorrectos"));
+			flash.addFlashAttribute("error", "Email o contraseña incorrectos");
 			return "redirect:/login";
 		}
-
-		// validamos que el usuario esté activo
 		if (!Boolean.TRUE.equals(usuario.getEstado())) {
-			flash.addFlashAttribute("alert", Alert.sweetAlertError("Usuario inactivo, comuníquese con soporte"));
+			flash.addFlashAttribute("error", "Usuario inactivo");
 			return "redirect:/login";
 		}
 
@@ -48,9 +44,17 @@ public class LoginController {
 		session.setAttribute("tipo", usuario.getTipo());
 		session.setAttribute("idUsuario", usuario.getIdUsuario());
 
-		String routeImage = "/assets/imagenes/bienvenidaTours.gif";
+		
+		String routeImage = "/assets/imagenes/bienvenidaTours.gif"; 
 		String alert = Alert.sweetImageUrl("Bienvenido a Tour Planner", usuario.getNombreCompleto(), routeImage);
 		flash.addFlashAttribute("alert", alert);
+
+		
+		var urlPendiente = (String) session.getAttribute("urlPendiente");
+		if (urlPendiente != null) {
+			session.removeAttribute("urlPendiente");
+			return "redirect:" + urlPendiente;
+		}
 
 		return "admin".equals(usuario.getTipo()) ? "redirect:/paquete/listado" : "redirect:/";
 	}

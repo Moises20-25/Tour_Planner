@@ -1,70 +1,91 @@
-<nav th:fragment="navbar(paginaActiva)"
-     xmlns:th="http://www.thymeleaf.org"
-     class="navbar navbar-expand-lg bg-white shadow-sm">
-    <div class="container">
-        <a class="navbar-brand text-primary fw-bold" th:href="@{/}">
-            <img th:src="@{/assets/imagenes/logo.png}"
-                 alt="Tour Planner"
-                 width="42"
-                 height="42">
-            Tour Planner
-        </a>
+<div th:fragment="navbar(paginaActiva)" xmlns:th="http://www.thymeleaf.org">
 
-        <div class="navbar-nav ms-auto align-items-lg-center">
-            <a class="nav-link"
-               th:href="@{/}"
-               th:classappend="${paginaActiva == 'inicio'} ? ' active' : ''">
-                Inicio
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary fw-bold" th:href="@{/}">
+                <img th:src="@{/assets/imagenes/logo.png}"
+                     alt="Tour Planner"
+                     width="42"
+                     height="42">
+                Tour Planner
             </a>
-            <a class="nav-link"
-               th:href="@{/asesores}"
-               th:classappend="${paginaActiva == 'asesores'} ? ' active' : ''">
-                Asesores
-            </a>
-            <a class="nav-link"
-               th:href="@{/destinos}"
-               th:classappend="${paginaActiva == 'destinos'} ? ' active' : ''">
-                Destinos
-            </a>
-            <a class="nav-link"
-               th:href="@{/paquetes}"
-               th:classappend="${paginaActiva == 'paquetes'} ? ' active' : ''">
+
+            <div class="navbar-nav ms-auto align-items-lg-center">
+                <a class="nav-link"
+                   th:href="@{/}"
+                   th:classappend="${paginaActiva == 'inicio'} ? ' active' : ''">
+                    Inicio
+                </a>
+                <a class="nav-link"
+                   th:href="@{/asesores}"
+                   th:classappend="${paginaActiva == 'asesores'} ? ' active' : ''">
+                    Asesores
+                </a>
+                <a class="nav-link"
+                   th:href="@{/destinos}"
+                   th:classappend="${paginaActiva == 'destinos'} ? ' active' : ''">
+                    Destinos
+                </a>
+                <a class="nav-link"
+                   th:href="@{/paquetes}"
+                   th:classappend="${paginaActiva == 'paquetes'} ? ' active' : ''">
+                    Paquetes
+                </a>
+
+                <a class="nav-link"
+                   th:if="${session.fullName != null}"
+                   th:href="@{/reserva/listado}"
+                   th:classappend="${paginaActiva == 'reservas'} ? ' active' : ''">
+                    Ver reservas
+                </a>
+
+                <a class="btn btn-primary ms-lg-2"
+                   th:if="${session.fullName == null}"
+                   th:href="@{/login}">
+                    Iniciar sesión
+                </a>
+
+                <span class="navbar-text ms-lg-2"
+                      th:if="${session.fullName != null}"
+                      th:text="${session.fullName}">Usuario</span>
+                <a class="btn btn-outline-danger ms-lg-2"
+                   th:if="${session.fullName != null}"
+                   th:href="@{/cerrar-sesion}">
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="bg-light border-bottom" th:if="${session.tipo == 'admin'}">
+        <div class="container d-flex flex-wrap align-items-center gap-3 py-2 small">
+            <span class="text-muted">Panel de administración:</span>
+            <a class="text-decoration-none"
+               th:href="@{/paquete/listado}"
+               th:classappend="${paginaActiva == 'mpaquetes'} ? 'fw-bold text-primary' : 'text-secondary'">
                 Paquetes
             </a>
-
-            <!-- Solo administrador -->
-            <a class="nav-link"
-               th:if="${session.tipo == 'admin'}"
-               th:href="@{/paquete/listado}"
-               th:classappend="${paginaActiva == 'mpaquetes'} ? ' active' : ''">
-                Mant. Paquetes
-            </a>
-            <a class="nav-link"
-               th:if="${session.tipo == 'admin'}"
+            <a class="text-decoration-none"
                th:href="@{/destino/listado}"
-               th:classappend="${paginaActiva == 'mdestinos'} ? ' active' : ''">
-                Mant. Destinos
+               th:classappend="${paginaActiva == 'mdestinos'} ? 'fw-bold text-primary' : 'text-secondary'">
+                Destinos
             </a>
-            <a class="nav-link"
-               th:if="${session.tipo == 'admin'}"
+            <a class="text-decoration-none"
                th:href="@{/servicio/listado}"
-               th:classappend="${paginaActiva == 'mservicios'} ? ' active' : ''">
-                Mant. Servicios
+               th:classappend="${paginaActiva == 'mservicios'} ? 'fw-bold text-primary' : 'text-secondary'">
+                Servicios
             </a>
-
-            <!-- Sin sesión -->
-            <a class="btn btn-primary ms-lg-2"
-               th:if="${session.fullName == null}"
-               th:href="@{/login}">
-                Iniciar sesión
+            <a class="text-decoration-none"
+               th:href="@{/reporte/reservas}"
+               th:classappend="${paginaActiva == 'rreservas'} ? 'fw-bold text-primary' : 'text-secondary'">
+                Reporte de reservas
             </a>
-
-            <!-- Con sesión -->
-            <a class="btn btn-outline-danger ms-lg-2"
-               th:if="${session.fullName != null}"
-               th:href="@{/cerrar-sesion}">
-                Cerrar sesión
+            <a class="text-decoration-none"
+               th:href="@{/reporte/paquetes}"
+               th:classappend="${paginaActiva == 'rpaquetes'} ? 'fw-bold text-primary' : 'text-secondary'">
+                Reporte de paquetes
             </a>
         </div>
-    </div>
-</nav>
+    </nav>
+
+</div>

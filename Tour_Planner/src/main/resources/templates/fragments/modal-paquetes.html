@@ -1,0 +1,78 @@
+<div th:fragment="modal-paquetes(paquetes, idModal, fechaMin)">
+	<div class="modal fade" th:id="${idModal}" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Seleccionar <strong>Lugar</strong></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+
+				<div class="modal-body">
+					<div class="table-responsive">
+						<table id="tblSelectorPaquetes" class="table table-hover align-middle w-100">
+							<thead class="table-secondary">
+								<tr>
+									<th>Paquete</th>
+									<th>Fecha de Viaje</th>
+									<th>N. Viajeros</th>
+									<th>Días del Paquete</th>
+									<th>Precio</th>
+									<th>Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="p : ${paquetes}">
+									<td th:text="${p.nombre}"></td>
+									<td>
+										<input type="date" class="form-control form-control-sm fecha-row"
+											th:min="${fechaMin}">
+									</td>
+									<td>
+										<input type="number" class="form-control form-control-sm viajeros-row"
+											min="1" step="1" value="1" style="width: 80px;">
+									</td>
+									<td th:text="${p.dias}"></td>
+									<td th:text="'S/ ' + ${#numbers.formatDecimal(p.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td>
+										<button type="button" class="btn btn-primary btn-sm btnSeleccionar"
+											th:data-param1="${p.idPaquete}"
+											th:data-param2="${p.nombre}"
+											th:data-param3="${p.categoria}"
+											th:data-param4="${p.dias}"
+											th:data-param5="${p.precio}">
+											Seleccionar
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	<script>
+		$(document).ready(function () {
+			const idTabla = '#tblSelectorPaquetes';
+			if ($.fn.DataTable.isDataTable(idTabla)) {
+				$(idTabla).DataTable().destroy();
+			}
+			var tabla = $(idTabla).DataTable({
+				lengthMenu: [5, 10],
+				pageLength: 5,
+				columnDefs: [{ orderable: false, targets: [1, 2, 5] }],
+				language: {
+					url: 'https://cdn.datatables.net/plug-ins/2.3.4/i18n/es-ES.json',
+					search: "Filtrar :"
+				}
+			});
+
+			
+			$(idTabla).closest('.modal').on('shown.bs.modal', function () {
+				tabla.columns.adjust();
+			});
+		});
+	</script>
+</div>

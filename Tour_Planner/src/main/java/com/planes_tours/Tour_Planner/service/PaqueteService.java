@@ -2,6 +2,7 @@ package com.planes_tours.Tour_Planner.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.planes_tours.Tour_Planner.dto.PaqueteFilter;
@@ -20,6 +21,10 @@ public class PaqueteService {
 
 	public List<Paquete> search(PaqueteFilter filter) {
 		return paqueteRepository.findByFilters(filter.region(), filter.categoria(), filter.idDestino());
+	}
+
+	public List<Paquete> getAll() {
+		return paqueteRepository.findAll(Sort.by(Sort.Direction.ASC, "nombre"));
 	}
 
 	public Paquete getOne(Integer id) {

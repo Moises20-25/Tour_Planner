@@ -5,16 +5,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import com.planes_tours.Tour_Planner.dto.DestinoFilter;
 import com.planes_tours.Tour_Planner.dto.PaqueteFilter;
-import com.planes_tours.Tour_Planner.model.ReservaForm;
 import com.planes_tours.Tour_Planner.service.DestinoService;
 import com.planes_tours.Tour_Planner.service.PaqueteService;
-import com.planes_tours.Tour_Planner.service.ReservaService;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -23,7 +19,6 @@ public class CatalogoController {
 
 	private final DestinoService destinoService;
 	private final PaqueteService paqueteService;
-	private final ReservaService reservaService;
 
 	@GetMapping("/destinos")
 	public String destinos(@ModelAttribute DestinoFilter filter, Model model) {
@@ -41,35 +36,9 @@ public class CatalogoController {
 		return "paquetes";
 	}
 
+	// Botón "Reservar" de cada paquete: abre la emisión de reserva con ese paquete cargado
 	@GetMapping("/reservar/{id}")
-	public String formularioReserva(@PathVariable Integer id, Model model) {
-		var paquete = paqueteService.getOne(id);
-		if (paquete == null) {
-			return "redirect:/paquetes";
-		}
-		model.addAttribute("paquete", paquete);
-		model.addAttribute("reservaForm", new ReservaForm());
-		return "reserva";
+	public String reservar(@PathVariable Integer id) {
+		return "redirect:/reserva/nuevo?idPaquete=" + id;
 	}
-
-	   @PostMapping("/reservar/{id}")
-	    public String enviarReserva(@PathVariable Integer id,
-	            @ModelAttribute("reservaForm") ReservaForm reservaForm,
-	            HttpSession session, Model model) {
-	        var paquete = paqueteService.getOne(id);
-	        if (paquete == null) {
-	            return "redirect:/paquetes";
-	        }
-
-	        var idUsuario = (Integer) session.getAttribute("idUsuario");
-	        if (idUsuario == null) {
-	            return "redirect:/login";
-	        }
-
-	        var response = reservaService.create(id, reservaForm, idUsuario);
-
-	        model.addAttribute("paquete", paquete);
-	        model.addAttribute(response.success() ? "mensaje" : "error", response.mensaje());
-	        return "reserva";
-	    }
 }

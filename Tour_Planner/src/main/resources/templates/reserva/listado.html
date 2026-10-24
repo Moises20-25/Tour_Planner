@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: layoutBase('Listado de reservas | Tour Planner', 'reservas', ~{::contenido})}">
+
+<div th:fragment="contenido">
+	<div class="container mt-5">
+
+		<div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+		<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+		<div class="card shadow-lg">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-10">
+						<h1 class="card-title"
+							th:text="${session.tipo == 'admin'} ? 'Listado de reservas (todas)' : 'Listado de reservas'">Listado de reservas</h1>
+					</div>
+					<div class="col-md-2">
+						<a th:href="@{/reserva/nuevo}" class="btn btn-success w-100">
+							<i class="bi bi-plus-lg"></i> Nuevo
+						</a>
+					</div>
+				</div>
+
+				
+				<div class="mb-3">
+					<fieldset class="border border-2 border-dark px-2 pb-2">
+						<legend class="float-none w-auto px-2">Filtros</legend>
+						<form method="get" th:action="@{/reserva/listado}">
+							<div class="row align-items-end">
+								<div class="col-md-4">
+									<label class="form-label" for="estado">Estado</label>
+									<select class="form-select" id="estado" name="estado">
+										<option value="" th:selected="${estadoSel == null or estadoSel == ''}">-- Todos --</option>
+										<option value="confirmada" th:selected="${estadoSel == 'confirmada'}">Confirmada</option>
+										<option value="cancelada" th:selected="${estadoSel == 'cancelada'}">Cancelada</option>
+									</select>
+								</div>
+								<div class="col text-end">
+									<button type="submit" class="btn btn-outline-dark">
+										<i class="bi bi-binoculars"></i> Buscar
+									</button>
+									<a th:href="@{/reserva/listado}" class="btn btn-outline-secondary">
+										<i class="bi bi-brush"></i> Limpiar
+									</a>
+								</div>
+							</div>
+						</form>
+					</fieldset>
+				</div>
+
+				<table id="tbl-reservas" class="table table-hover table-striped table-borderless align-middle">
+					<thead class="table-dark text-center">
+						<tr>
+							<th>Número</th>
+							<th>Fecha de registro</th>
+							<th th:if="${session.tipo == 'admin'}">Cliente</th>
+							<th>Total</th>
+							<th>Estado</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody class="table-secondary">
+						<tr th:each="r : ${lstReservas}">
+							<td th:text="${r.numero}" class="text-center"></td>
+							<td th:text="${#temporals.format(r.fechaReserva, 'dd/MM/yyyy hh:mm:ss a')}"></td>
+							<td th:if="${session.tipo == 'admin'}">
+								<div th:text="${r.usuario.nombreCompleto}">Cliente</div>
+								<small class="text-muted" th:text="${r.usuario.email}">correo</small>
+							</td>
+							<td class="text-end fw-bold"
+								th:text="'S/ ' + ${#numbers.formatDecimal(r.montoTotal, 1, 'COMMA', 2, 'POINT')}"></td>
+							<td class="text-center">
+								<span class="badge"
+									th:classappend="${r.estado == 'confirmada'} ? 'bg-success' : 'bg-danger'"
+									th:text="${r.estado}"></span>
+							</td>
+							<td class="text-center text-nowrap">
+								<!-- Ver detalle -->
+								<button type="button" class="btn btn-outline-primary btn-sm btnDetalle" title="Ver detalle"
+									th:attr="data-numero=${r.numero},data-codigo=${r.codigoReserva}">
+									<i class="bi bi-eye"></i>
+								</button>
+
+								
+								<form class="d-inline" th:if="${r.estado == 'confirmada'}"
+									th:action="@{/reserva/cancelar}" method="post">
+									<input type="hidden" name="idReserva" th:value="${r.idReserva}">
+									<button type="submit" class="btn btn-outline-danger btn-sm" title="Cancelar reserva"
+										onclick="return confirm('¿Seguro que deseas cancelar esta reserva?');">
+										<i class="bi bi-x-circle"></i> Cancelar
+									</button>
+								</form>
+
+								
+								<a th:href="@{/reporte/reserva/{n}(n=${r.idReserva})}" target="_blank"
+									class="btn btn-outline-danger btn-sm" title="Ver PDF">
+									<i class="bi bi-file-earmark-pdf"></i> PDF
+								</a>
+
+								
+								<div class="d-none detalle-contenido">
+									<p class="mb-2" th:if="${session.tipo == 'admin'}">
+										<strong>Cliente:</strong>
+										<span th:text="${r.usuario.nombreCompleto + ' (' + r.usuario.email + ')'}"></span>
+									</p>
+									<table class="table table-sm table-bordered mb-0">
+										<thead class="table-light">
+											<tr>
+												<th>Paquete</th>
+												<th>Fecha de viaje</th>
+												<th class="text-center">Viajeros</th>
+												<th class="text-end">Precio</th>
+												<th class="text-end">Subtotal</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="d : ${r.detalles}">
+												<td th:text="${d.paquete?.nombre ?: d.servicio?.nombre}"></td>
+												<td th:text="${#temporals.format(d.fechaInicio != null ? d.fechaInicio : r.fechaInicio, 'dd/MM/yyyy') + ' al ' + #temporals.format(d.fechaFin != null ? d.fechaFin : r.fechaFin, 'dd/MM/yyyy')}"></td>
+												<td class="text-center" th:text="${d.cantidad}"></td>
+												<td class="text-end"
+													th:text="'S/ ' + ${#numbers.formatDecimal(d.precioUnitario, 1, 'COMMA', 2, 'POINT')}"></td>
+												<td class="text-end"
+													th:text="'S/ ' + ${#numbers.formatDecimal(d.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	
+	<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detalleTitulo">Detalle de la reserva</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body" id="detalleCuerpo"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			
+			$('#tbl-reservas').DataTable({
+				order: [],
+				columnDefs: [{ orderable: false, targets: -1 }],
+				language: {
+					search: "Buscar: ",
+					url: 'https://cdn.datatables.net/plug-ins/2.0.3/i18n/es-ES.json'
+				}
+			});
+
+			$(document).on('click', '.btnDetalle', function () {
+				var $btn = $(this);
+				$('#detalleTitulo').text('Reserva N° ' + $btn.attr('data-numero') + ' · ' + $btn.attr('data-codigo'));
+				$('#detalleCuerpo').html($btn.closest('td').find('.detalle-contenido').html());
+				bootstrap.Modal.getOrCreateInstance(document.getElementById('modalDetalle')).show();
+			});
+		});
+	</script>
+</div>
+
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: layoutBase('Emisión de reserva | Tour Planner', 'reservas', ~{::contenido})}">
+
+<div th:fragment="contenido">
+
+	<div class="container mt-4">
+
+		<form th:action="@{/reserva/registrar}" method="post">
+			<div class="row mb-3 mt-5 align-items-center">
+				<div class="col-md-10">
+					<h1 class="m-0">Emisión de reserva</h1>
+					<h5 class="text-muted mt-1" th:text="|Cliente ${session.fullName}|"></h5>
+				</div>
+
+				<div class="col-md-2">
+					<button type="submit" class="btn btn-primary w-100">
+						Registrar
+						<i class="bi bi-floppy"></i>
+					</button>
+				</div>
+			</div>
+		</form>
+
+		<div class="card mb-4">
+			<div class="card-body">
+				<p class="m-0">
+					<strong>Fecha:</strong>
+					<span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
+				</p>
+			</div>
+		</div>
+
+		<div class="card mb-4">
+			<div class="card-body">
+
+				<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalPaquetes">
+					<i class="bi bi-search"></i> Seleccionar Lugar
+				</button>
+
+				<form id="form-agregar" novalidate th:action="@{/reserva/agregar}" method="post"
+					th:object="${paqueteSeleccionado}" class="needs-validation">
+					<input type="hidden" th:field="*{idPaquete}">
+					<input type="hidden" th:field="*{categoria}">
+					<div class="row g-2 align-items-end">
+						<div class="col-md-3">
+							<label for="nombre">Paquete</label>
+							<input type="text" class="form-control" th:field="*{nombre}" readonly>
+						</div>
+						<div class="col-md-2">
+							<label for="fechaViaje">Fecha de Viaje</label>
+							<input type="date" class="form-control" th:field="*{fechaViaje}" th:min="${manana}">
+						</div>
+						<div class="col-md-2">
+							<label for="viajeros">N. Viajeros</label>
+							<input type="number" class="form-control" th:field="*{viajeros}" min="1" step="1">
+						</div>
+						<div class="col-md-2">
+							<label for="dias">Días del Paquete</label>
+							<input type="text" class="form-control" th:field="*{dias}" readonly>
+						</div>
+						<div class="col-md-1">
+							<label for="precio">Precio</label>
+							<input type="text" class="form-control" th:field="*{precio}" readonly>
+						</div>
+						<div class="col-md-2 d-grid">
+							<button class="btn btn-success">
+								<i class="bi bi-plus-lg"></i> Agregar
+							</button>
+						</div>
+					</div>
+					<div class="form-text mt-2">
+						Solo se puede reservar desde mañana. El viaje termina el:
+						<strong id="fechaFinTxt">-</strong>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="card">
+			<div class="card-body">
+				<h5>Detalle del Paquete</h5>
+				<div class="table-responsive">
+					<table class="table table-bordered align-middle">
+						<thead class="table-dark text-center">
+							<tr>
+								<th>Código</th>
+								<th>Nombre</th>
+								<th>Categoría</th>
+								<th>Viaje</th>
+								<th>Viajeros</th>
+								<th>Duración</th>
+								<th>Precio</th>
+								<th>Subtotal</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${seleccionados}">
+								<td th:text="${item.idPaquete}" class="text-center"></td>
+								<td th:text="${item.nombre}"></td>
+								<td th:text="${item.categoria}"></td>
+								<td class="text-center"
+									th:text="${#temporals.format(item.fechaViaje, 'dd/MM/yyyy') + ' al ' + #temporals.format(item.fechaFin, 'dd/MM/yyyy')}"></td>
+								<td th:text="${item.viajeros}" class="text-center"></td>
+								<td th:text="${item.dias + ' días'}" class="text-center"></td>
+								<td class="text-end"
+									th:text="'S/ ' + ${#numbers.formatDecimal(item.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+								<td class="text-end"
+									th:text="'S/ ' + ${#numbers.formatDecimal(item.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+								<td class="text-center">
+									<form th:action="@{/reserva/remover}" method="post">
+										<input type="hidden" name="id" th:value="${item.idPaquete}" />
+										<button class="btn btn-danger btn-sm">
+											<i class="bi bi-trash"></i> Remover
+										</button>
+									</form>
+								</td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(seleccionados)}">
+								<td colspan="9" class="text-center text-muted">Aún no agregaste ningún paquete.</td>
+							</tr>
+						</tbody>
+						<tfoot th:unless="${#lists.isEmpty(seleccionados)}">
+							<tr>
+								<th colspan="7" class="text-end">Total</th>
+								<th class="text-end"
+									th:text="'S/ ' + ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}"></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modal-paquetes :: modal-paquetes(${paquetes}, 'modalPaquetes', ${manana})}"></div>
+
+	<script>
+		$(document).ready(function () {
+
+			function calcularFin() {
+				const fecha = $('#fechaViaje').val();
+				const dias = parseInt($('#dias').val());
+				if (!fecha || !dias) { $('#fechaFinTxt').text('-'); return; }
+				const d = new Date(fecha + 'T00:00:00');
+				d.setDate(d.getDate() + dias - 1);
+				$('#fechaFinTxt').text(d.toLocaleDateString('es-PE'));
+			}
+			$('#fechaViaje').on('change', calcularFin);
+			calcularFin();
+
+			$(document).on('click', '.btnSeleccionar', function () {
+				let idPaquete = $(this).data('param1');
+				let nombre = $(this).data('param2');
+				let categoria = $(this).data('param3');
+				let dias = $(this).data('param4');
+				let precio = $(this).data('param5');
+
+				let fila = $(this).closest('tr');
+				let fecha = fila.find('.fecha-row').val();
+				let viajeros = fila.find('.viajeros-row').val() || 1;
+
+				$('#idPaquete').val(idPaquete);
+				$('#nombre').val(nombre);
+				$('#categoria').val(categoria);
+				$('#dias').val(dias);
+				$('#precio').val(precio);
+				$('#fechaViaje').val(fecha);
+				$('#viajeros').val(viajeros);
+				calcularFin();
+
+				bootstrap.Modal.getOrCreateInstance($('#modalPaquetes')[0]).hide();
+
+				try {
+					$('#nombre').valid();
+					$('#viajeros').valid();
+					if (fecha) { $('#fechaViaje').valid(); }
+				} catch (e) {
+					console.error('Error al validar:', e);
+				}
+			});
+		});
+
+		$(document).ready(function () {
+
+			$.validator.addMethod('fechaMinima', function (value, element) {
+				if (!value) return true;
+				return value >= $(element).attr('min');
+			}, 'La fecha debe ser desde mañana');
+
+			$("#form-agregar").validate({
+				rules: {
+					nombre: {
+						required: true
+					},
+					fechaViaje: {
+						required: true,
+						fechaMinima: true
+					},
+					viajeros: {
+						required: true,
+						min: 1
+					}
+				},
+				messages: {
+					nombre: {
+						required: "seleccione un lugar"
+					},
+					fechaViaje: {
+						required: "seleccione la fecha de viaje"
+					},
+					viajeros: {
+						required: "campo requerido",
+						min: "viajeros min 1"
+					}
+				},
+				errorElement: 'div',
+				errorClass: 'invalid-tooltip',
+				highlight: function (element) {
+					$(element).addClass('is-invalid').removeClass('is-valid');
+				},
+				unhighlight: function (element) {
+					$(element).removeClass('is-invalid').addClass('is-valid');
+				}
+			});
+		});
+	</script>
+</div>
+
+</html>

@@ -9,7 +9,12 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+		// Solo administrador
 		registry.addInterceptor(new LoginInterceptor())
 				.addPathPatterns("/destino/**", "/paquete/**", "/servicio/**");
+
+		// Cualquier usuario logueado (cliente o admin)
+		registry.addInterceptor(new SesionInterceptor())
+				.addPathPatterns("/reserva/**", "/reporte/**");
 	}
 }

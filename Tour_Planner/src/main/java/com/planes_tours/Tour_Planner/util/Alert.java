@@ -36,7 +36,6 @@ public final class Alert {
                 """, timer, esc(icon), esc(title));
     }
 
-    // Mensaje de bienvenida con foto (como el del profesor)
     public static String sweetImageUrl(String title, String text, String imageUrl) {
         return String.format("""
                 <script>
@@ -51,4 +50,8 @@ public final class Alert {
                 </script>
                 """, esc(title), esc(text), esc(imageUrl));
     }
+    
+	public static String sweetAlertInfo(String text) {
+		return sweetAlert("Información", text, "info");
+	}
 }
