@@ -82,11 +82,13 @@
                             <th>Precio</th>
                             <th>Días</th>
                             <th>Oferta</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="paquete : ${lstPaquetes}">
+                        <tr th:each="paquete : ${lstPaquetes}"
+                            th:classappend="${paquete.activo} ? '' : 'table-secondary text-muted'">
                             <td th:text="${paquete.idPaquete}">1</td>
                             <td><strong th:text="${paquete.nombre}">Paquete</strong></td>
                             <td th:text="${paquete.destino != null} ? ${paquete.destino.nombre} : '-'">Destino</td>
@@ -104,22 +106,32 @@
                                 <span th:if="${paquete.descuento}" class="badge bg-danger">OFERTA</span>
                                 <span th:unless="${paquete.descuento}" class="badge bg-secondary">-</span>
                             </td>
+                            <td>
+                                <span th:if="${paquete.activo}" class="badge bg-success">ACTIVO</span>
+                                <span th:unless="${paquete.activo}" class="badge bg-dark">INACTIVO</span>
+                            </td>
                             <td class="text-nowrap">
                                 <a th:href="@{/paquete/edicion/{id}(id=${paquete.idPaquete})}"
                                    class="btn btn-warning btn-sm me-1" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form class="d-inline" method="post" th:action="@{/paquete/eliminar}">
+                                <form class="d-inline" method="post" th:action="@{/paquete/estado}">
                                     <input type="hidden" name="id" th:value="${paquete.idPaquete}">
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar"
-                                            onclick="return confirm('¿Está seguro de eliminar este paquete?');">
-                                        <i class="bi bi-trash"></i>
+                                    <button type="submit" class="btn btn-sm"
+                                            th:classappend="${paquete.activo} ? 'btn-outline-danger' : 'btn-success'"
+                                            th:title="${paquete.activo} ? 'Desactivar' : 'Activar'"
+                                            th:attr="onclick=${paquete.activo}
+                                                ? 'return confirm(\'¿Desactivar este paquete? Los clientes dejarán de verlo.\');'
+                                                : 'return confirm(\'¿Activar este paquete?\');'">
+                                        <i class="bi"
+                                           th:classappend="${paquete.activo} ? 'bi-toggle-on' : 'bi-toggle-off'"></i>
+                                        <span th:text="${paquete.activo} ? 'Desactivar' : 'Activar'">Desactivar</span>
                                     </button>
                                 </form>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(lstPaquetes)}">
-                            <td colspan="9" class="text-center text-muted">No hay paquetes para mostrar.</td>
+                            <td colspan="10" class="text-center text-muted">No hay paquetes para mostrar.</td>
                         </tr>
                     </tbody>
                 </table>

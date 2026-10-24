@@ -30,13 +30,14 @@ public class CatalogoController {
 
 	@GetMapping("/paquetes")
 	public String paquetes(@ModelAttribute PaqueteFilter filter, Model model) {
-		model.addAttribute("paquetes", paqueteService.search(filter));
+		
+		model.addAttribute("paquetes", paqueteService.searchActivos(filter));
 		model.addAttribute("regionSeleccionada", filter.region());
 		model.addAttribute("categoriaSeleccionada", filter.categoria());
 		return "paquetes";
 	}
 
-	// Botón "Reservar" de cada paquete: abre la emisión de reserva con ese paquete cargado
+	
 	@GetMapping("/reservar/{id}")
 	public String reservar(@PathVariable Integer id) {
 		return "redirect:/reserva/nuevo?idPaquete=" + id;

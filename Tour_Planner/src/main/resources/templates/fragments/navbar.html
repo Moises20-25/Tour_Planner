@@ -10,49 +10,57 @@
                 Tour Planner
             </a>
 
-            <div class="navbar-nav ms-auto align-items-lg-center">
-                <a class="nav-link"
-                   th:href="@{/}"
-                   th:classappend="${paginaActiva == 'inicio'} ? ' active' : ''">
-                    Inicio
-                </a>
-                <a class="nav-link"
-                   th:href="@{/asesores}"
-                   th:classappend="${paginaActiva == 'asesores'} ? ' active' : ''">
-                    Asesores
-                </a>
-                <a class="nav-link"
-                   th:href="@{/destinos}"
-                   th:classappend="${paginaActiva == 'destinos'} ? ' active' : ''">
-                    Destinos
-                </a>
-                <a class="nav-link"
-                   th:href="@{/paquetes}"
-                   th:classappend="${paginaActiva == 'paquetes'} ? ' active' : ''">
-                    Paquetes
-                </a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#menuPrincipal"
+                    aria-controls="menuPrincipal" aria-expanded="false" aria-label="Mostrar menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <a class="nav-link"
-                   th:if="${session.fullName != null}"
-                   th:href="@{/reserva/listado}"
-                   th:classappend="${paginaActiva == 'reservas'} ? ' active' : ''">
-                    Ver reservas
-                </a>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <div class="navbar-nav ms-auto align-items-lg-center">
+                    <a class="nav-link"
+                       th:href="@{/}"
+                       th:classappend="${paginaActiva == 'inicio'} ? ' active' : ''">
+                        Inicio
+                    </a>
+                    <a class="nav-link"
+                       th:href="@{/asesores}"
+                       th:classappend="${paginaActiva == 'asesores'} ? ' active' : ''">
+                        Asesores
+                    </a>
+                    <a class="nav-link"
+                       th:href="@{/destinos}"
+                       th:classappend="${paginaActiva == 'destinos'} ? ' active' : ''">
+                        Destinos
+                    </a>
+                    <a class="nav-link"
+                       th:href="@{/paquetes}"
+                       th:classappend="${paginaActiva == 'paquetes'} ? ' active' : ''">
+                        Paquetes
+                    </a>
 
-                <a class="btn btn-primary ms-lg-2"
-                   th:if="${session.fullName == null}"
-                   th:href="@{/login}">
-                    Iniciar sesión
-                </a>
+                    <a class="nav-link"
+                       th:if="${session.fullName != null}"
+                       th:href="@{/reserva/listado}"
+                       th:classappend="${paginaActiva == 'reservas'} ? ' active' : ''">
+                        Ver reservas
+                    </a>
 
-                <span class="navbar-text ms-lg-2"
-                      th:if="${session.fullName != null}"
-                      th:text="${session.fullName}">Usuario</span>
-                <a class="btn btn-outline-danger ms-lg-2"
-                   th:if="${session.fullName != null}"
-                   th:href="@{/cerrar-sesion}">
-                    Cerrar sesión
-                </a>
+                    <a class="btn btn-primary ms-lg-2 mt-2 mt-lg-0"
+                       th:if="${session.fullName == null}"
+                       th:href="@{/login}">
+                        Iniciar sesión
+                    </a>
+
+                    <span class="navbar-text ms-lg-2"
+                          th:if="${session.fullName != null}"
+                          th:text="${session.fullName}">Usuario</span>
+                    <a class="btn btn-outline-danger ms-lg-2 mt-2 mt-lg-0"
+                       th:if="${session.fullName != null}"
+                       th:href="@{/cerrar-sesion}">
+                        Cerrar sesión
+                    </a>
+                </div>
             </div>
         </div>
     </nav>

@@ -64,6 +64,9 @@ public class Paquete {
 	@Column(name = "destacado")
 	private Boolean destacado;
 
+	@Column(name = "activo")
+	private Boolean activo;
+
 	@ManyToOne
 	@JoinColumn(name = "idDestino")
 	private Destino destino;

@@ -38,7 +38,7 @@ public class ReservaController {
 	private final ReservaService reservaService;
 	private final PaqueteService paqueteService;
 
-	// Inicializamos la lista de paquetes seleccionados en sesión
+	
 	@ModelAttribute("seleccionados")
 	public List<PaqueteSeleccionado> inicio() {
 		return new ArrayList<PaqueteSeleccionado>();
@@ -47,9 +47,9 @@ public class ReservaController {
 	@GetMapping("listado")
 	public String listado(@RequestParam(required = false) String estado, HttpSession session, Model model) {
 		var tipo = (String) session.getAttribute("tipo");
-		Integer idUsuario = null; // administrador: sin filtro, ve todas
+		Integer idUsuario = null; 
 		if (!"admin".equals(tipo)) {
-			idUsuario = (Integer) session.getAttribute("idUsuario"); // los demás: solo las suyas
+			idUsuario = (Integer) session.getAttribute("idUsuario"); 
 		}
 		model.addAttribute("lstReservas", reservaService.search(idUsuario, estado));
 		model.addAttribute("estadoSel", estado);
@@ -63,10 +63,10 @@ public class ReservaController {
 		var paqueteSeleccionado = new PaqueteSeleccionado();
 		paqueteSeleccionado.setViajeros(1);
 
-		// Si viene desde el botón "Reservar" de un paquete, lo dejamos cargado
+		
 		if (idPaquete != null) {
 			var p = paqueteService.getOne(idPaquete);
-			if (p != null) {
+			if (p != null && Boolean.TRUE.equals(p.getActivo())) {
 				paqueteSeleccionado.setIdPaquete(p.getIdPaquete());
 				paqueteSeleccionado.setNombre(p.getNombre());
 				paqueteSeleccionado.setCategoria(p.getCategoria());
@@ -79,7 +79,7 @@ public class ReservaController {
 				BigDecimal::add);
 
 		model.addAttribute("paqueteSeleccionado", paqueteSeleccionado);
-		model.addAttribute("paquetes", paqueteService.getAll());
+		model.addAttribute("paquetes", paqueteService.getAll()); 
 		model.addAttribute("total", total);
 		model.addAttribute("manana", LocalDate.now().plusDays(1));
 		return "reserva/nuevo";
@@ -99,10 +99,17 @@ public class ReservaController {
 			return "redirect:/reserva/nuevo";
 		}
 
-		// volvemos a la misma pantalla con el paquete ya elegido
+		
+		if (!Boolean.TRUE.equals(paquete.getActivo())) {
+			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("El paquete «" + paquete.getNombre()
+					+ "» ya no está disponible"));
+			return "redirect:/reserva/nuevo";
+		}
+
+		
 		var volver = "redirect:/reserva/nuevo?idPaquete=" + paquete.getIdPaquete();
 
-		// validamos si ya existe el paquete en la lista
+		
 		boolean existe = seleccionados.stream()
 				.anyMatch(p -> p.getIdPaquete().equals(paqueteSeleccionado.getIdPaquete()));
 
@@ -111,7 +118,7 @@ public class ReservaController {
 			return "redirect:/reserva/nuevo";
 		}
 
-		// validamos la fecha: solo desde mañana
+		
 		var manana = LocalDate.now().plusDays(1);
 		if (paqueteSeleccionado.getFechaViaje() == null || paqueteSeleccionado.getFechaViaje().isBefore(manana)) {
 			flash.addFlashAttribute("alert",
@@ -119,13 +126,13 @@ public class ReservaController {
 			return volver;
 		}
 
-		// validamos los viajeros
+		
 		if (paqueteSeleccionado.getViajeros() == null || paqueteSeleccionado.getViajeros() < 1) {
 			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("El número de viajeros debe ser al menos 1"));
 			return volver;
 		}
 
-		// Los datos del paquete se leen de la base de datos, no del formulario
+		
 		paqueteSeleccionado.setNombre(paquete.getNombre());
 		paqueteSeleccionado.setCategoria(paquete.getCategoria());
 		paqueteSeleccionado.setDias(paquete.getDias() == null || paquete.getDias() < 1 ? 1 : paquete.getDias());
@@ -134,7 +141,7 @@ public class ReservaController {
 		var ini = paqueteSeleccionado.getFechaViaje();
 		var fin = paqueteSeleccionado.getFechaFin();
 
-		// 1) cruce con los paquetes ya agregados a esta reserva
+		
 		for (var s : seleccionados) {
 			if (!ini.isAfter(s.getFechaFin()) && !fin.isBefore(s.getFechaViaje())) {
 				flash.addFlashAttribute("alert", Alert.sweetAlertInfo("Esas fechas se cruzan con «" + s.getNombre()
@@ -143,7 +150,7 @@ public class ReservaController {
 			}
 		}
 
-		// 2) cruce con reservas que el cliente ya registró
+		
 		if (reservaService.hayCruce(idUsuario, ini, fin)) {
 			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("Ya tienes una reserva entre el "
 					+ ini.format(FMT) + " y el " + fin.format(FMT) + ". Elige otras fechas"));
@@ -158,7 +165,7 @@ public class ReservaController {
 	public String remover(@RequestParam Integer id,
 			@ModelAttribute("seleccionados") List<PaqueteSeleccionado> seleccionados) {
 
-		// Removemos el paquete de la lista de paquetes seleccionados
+		
 		seleccionados.removeIf(p -> p.getIdPaquete().equals(id));
 
 		return "redirect:/reserva/nuevo";
@@ -169,22 +176,33 @@ public class ReservaController {
 			@ModelAttribute("seleccionados") List<PaqueteSeleccionado> seleccionados,
 			RedirectAttributes flash, HttpSession session, SessionStatus sessionStatus) {
 
-		// Obtenemos dato de sesión
+		
 		var idUsuario = (Integer) session.getAttribute("idUsuario");
 
-		// Validamos sesión
+		
 		if (idUsuario == null) {
 			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("Sesión caducada"));
 			return "redirect:/login";
 		}
 
-		// Validamos que al menos haya un seleccionado
+		
 		if (seleccionados.isEmpty()) {
 			flash.addFlashAttribute("alert", Alert.sweetAlertInfo("Agregue como min 1 paquete"));
 			return "redirect:/reserva/nuevo";
 		}
 
-		// Mapeamos los datos seleccionados a DetalleReserva y lo seteamos
+		
+		for (var item : new ArrayList<>(seleccionados)) {
+			var p = paqueteService.getOne(item.getIdPaquete());
+			if (p == null || !Boolean.TRUE.equals(p.getActivo())) {
+				seleccionados.remove(item);
+				flash.addFlashAttribute("alert", Alert.sweetAlertInfo("El paquete «" + item.getNombre()
+						+ "» ya no está disponible y fue quitado de tu lista"));
+				return "redirect:/reserva/nuevo";
+			}
+		}
+
+		
 		var detalles = seleccionados.stream().map(item -> {
 			var paquete = paqueteService.getOne(item.getIdPaquete());
 			var det = new DetalleReserva();
@@ -198,10 +216,10 @@ public class ReservaController {
 			return det;
 		}).toList();
 
-		// Seteamos el listado del detalle
+		
 		reserva.setDetalles(new ArrayList<>(detalles));
 
-		// Registramos finalmente la reserva
+		
 		var response = reservaService.create(reserva, idUsuario);
 
 		if (!response.success()) {
@@ -209,9 +227,9 @@ public class ReservaController {
 			return "redirect:/reserva/nuevo";
 		}
 
-		sessionStatus.setComplete(); // vacía la lista de la sesión
+		sessionStatus.setComplete(); 
 
-		// Enviamos mensaje de éxito
+		
 		flash.addFlashAttribute("alert", Alert.sweetToast(response.mensaje(), "success", 5000));
 		return "redirect:/reserva/listado";
 	}

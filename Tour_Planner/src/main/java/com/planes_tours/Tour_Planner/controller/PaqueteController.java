@@ -66,9 +66,9 @@ public class PaqueteController {
 		return "redirect:/paquete/listado";
 	}
 
-	@PostMapping("eliminar")
-	public String eliminar(@RequestParam Integer id, RedirectAttributes flash) {
-		var response = paqueteService.delete(id);
+	@PostMapping("estado")
+	public String estado(@RequestParam Integer id, RedirectAttributes flash) {
+		var response = paqueteService.cambiarEstado(id);
 		flash.addFlashAttribute(response.success() ? "mensaje" : "error", response.mensaje());
 		return "redirect:/paquete/listado";
 	}
